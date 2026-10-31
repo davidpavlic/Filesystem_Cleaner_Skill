@@ -12,5 +12,10 @@ model: sonnet
 - Output: up to ~50 files > answer in chat. More, or no path given > report using `assets/report-template.md`.
 
 ## Functions
-TODO
-
+| Request | First read | Script |
+|---|---|---|
+| recommend structure | references/structure.md | scripts/scan.py |
+| user bloat | TODO | TODO |
+| software bloat | TODO | TODO |
+| system bloat | TODO | TODO |
+| disk full | TODO | TODO |
