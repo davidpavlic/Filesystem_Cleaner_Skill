@@ -1,6 +1,8 @@
 ---
 type: cleaner-report
 date: {{YYYY-MM-DD}}
+scope: {{scanned path, or "default paths"}}
+functions: [{{disk-overview, structure}}]
 ---
 
 <!--
@@ -19,6 +21,8 @@ Instructions for filling this template (remove all comments in the final report)
 - **Biggest win:** {{one sentence}}
 
 ## Disk Overview
+{{If the scanned path is not on the full filesystem: say that cleaning it frees nothing there.}}
+
 | Filesystem | Type | Size | Used | Free | Full |
 |---|---|---|---|---|---|
 | {{mount}} | {{ext4}} | {{size}} | {{used}} | {{free}} | {{yes/no}} |

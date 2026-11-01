@@ -9,13 +9,14 @@ model: sonnet
 ## Rules
 - Never move, rename or delete files. The only file you may create is the report.
 - Always get facts (sizes, dates, hashes) from the scripts, never estimate them.
-- Output: up to ~50 files > answer in chat. More, or no path given > report using `assets/report-template.md`.
+- Output: up to ~50 files > answer in chat. More > report using `assets/report-template.md`.
+- Any request about space or cleaning up: run `disk_overview.py` first and follow references/disk-overview.md. Deleting only frees space on the filesystem a file lives on.
 
 ## Functions
 | Request | First read | Script |
 |---|---|---|
 | recommend structure | references/structure.md | scripts/scan.py |
+| disk full, storage full, what can I delete, free up space | references/disk-overview.md | scripts/disk_overview.py |
 | user bloat | TODO | TODO |
 | software bloat | TODO | TODO |
 | system bloat | TODO | TODO |
-| disk full | TODO | TODO |

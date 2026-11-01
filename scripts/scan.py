@@ -10,8 +10,13 @@ import json
 import os
 import stat
 import time
+import sys
 from collections import Counter, defaultdict
 from datetime import date
+
+sys.dont_write_bytecode = True  # read-only promise: no __pycache__ next to the scripts
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # python3 -I leaves it out
+from common import disk_bytes, disk_bytes_to_count, human
 
 # Extensions we treat as installers: usually deletable once the app is installed.
 INSTALLERS = {".exe", ".msi", ".msix", ".dmg", ".pkg", ".deb", ".rpm", ".run", ".appimage"}
@@ -22,32 +27,6 @@ ARCHIVES = (".tar.gz", ".tgz", ".tar", ".zip", ".7z", ".rar")
 def day(ts):
     # Format a Unix timestamp as a plain YYYY-MM-DD date.
     return date.fromtimestamp(ts).isoformat()
-
-
-def human(n):
-    # Byte count to readable string
-    for unit in ("B", "KB", "MB", "GB"):
-        if n < 1024:
-            if unit == "B":
-                return f"{n:.0f} {unit}"
-            return f"{n:.1f} {unit}"
-        n /= 1024
-    return f"{n:.1f} TB"
-
-
-def disk_bytes(file_stat):
-    blocks = getattr(file_stat, "st_blocks", None)                  # None as default (Windows has no st_blocks)
-    return file_stat.st_size if blocks is None else blocks * 512
-
-
-def disk_bytes_to_count(file_stat, seen):
-    # Check links on file_stat
-    if file_stat.st_nlink > 1:
-        key = (file_stat.st_dev, file_stat.st_ino)  # FS, Inode
-        if key in seen:
-            return 0
-        seen.add(key)
-    return disk_bytes(file_stat)
 
 
 def files(root, include_hidden):
