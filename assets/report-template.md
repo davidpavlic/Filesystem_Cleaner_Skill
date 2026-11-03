@@ -31,16 +31,22 @@ Instructions for filling this template (remove all comments in the final report)
 |---|---|---|---|
 | {{path}} | {{size}} | {{share}} | {{command, or – if unknown}} |
 
-## Structure Analysis
+## Structure
+**Current**
 ```
-{{tree}}
+{{current tree, max 2 levels}}
 ```
 
-| Outlier | Path | Interpretation |
+**Proposed**
+```
+{{proposed tree, max 2 levels}}
+```
+
+| From | To | Size |
 |---|---|---|
-| {{crowded}} | {{path}} | {{what it says about how the folder is used}} |
+| {{path}} | {{target}} | {{size}} |
 
-{{3–5 sentences: shape, areas, activity, conventions. Interpretation only, no recommendations.}}
+{{2–3 sentences: which areas you found and why the tree fits them}}
 
 ## Dead Folders & Installers
 | Path | Size | Last modified | Reason |
@@ -51,19 +57,6 @@ Instructions for filling this template (remove all comments in the final report)
 | Keep | Duplicates | Size each |
 |---|---|---|
 | {{path}} | {{path}}<br>{{path}} | {{size}} |
-
-## Structure Recommendation
-**Current**
-```
-{{current tree}}
-```
-
-**Proposed**
-```
-{{proposed tree}}
-```
-
-{{2–3 sentences: why this structure}}
 
 ## Recommended Actions
 <!-- Checklist so the user can tick items off. Biggest gains first. -->
