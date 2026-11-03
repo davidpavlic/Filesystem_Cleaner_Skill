@@ -1,7 +1,6 @@
 ---
 name: folder-cleaner
 description: Finds dead folders, old installers, duplicates and dev artifacts, and recommends folder structures plus files to delete or rename. Read-only, never changes files. Use for "clean up", "free up space", "storage full", "what can I delete", "aufräumen".
-model: sonnet
 ---
 
 # Folder Cleaner
@@ -15,7 +14,7 @@ model: sonnet
 ## Functions
 | Request | First read | Script |
 |---|---|---|
-| recommend structure | references/structure.md | scripts/scan.py |
+| recommend structure, tidy up, aufräumen | references/structure.md | scripts/scan.py |
 | disk full, storage full, what can I delete, free up space | references/disk-overview.md | scripts/disk_overview.py |
 | user bloat | TODO | TODO |
 | software bloat | TODO | TODO |

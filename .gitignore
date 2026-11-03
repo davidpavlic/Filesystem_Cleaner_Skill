@@ -1,0 +1,4 @@
+# Eval transcripts contain real file and folder names from your home
+evals/runs/
+
+__pycache__/

@@ -1,0 +1,94 @@
+{
+    "cases": [
+        {
+            "id": "storage_full",
+            "prompt": "My storage is full",
+            "expect_skill": true,
+            "scripts": [
+                {
+                    "script_name": "disk_overview.py",
+                    "script_args": [{"path": null}],
+                    "must_run": true
+                }
+            ]
+        },
+        {
+            "id": "clear_downloads",
+            "prompt": "Clear up space in the Downloads folder",
+            "expect_skill": true,
+            "scripts": [
+                {
+                    "script_name": "disk_overview.py",
+                    "script_args": [
+                        {
+                            "path": "(^|/)Downloads/?$"
+                        }
+                    ],
+                    "must_run": true
+                }
+            ]
+        },
+        {
+            "id": "aufraeumen_downloads",
+            "prompt": "Räum meinen Downloads-Ordner auf",
+            "expect_skill": true,
+            "scripts": [
+                {
+                    "script_name": "disk_overview.py",
+                    "script_args": [
+                        {
+                            "path": "(^|/)Downloads/?$"
+                        }
+                    ],
+                    "must_run": true
+                },
+                {
+                    "script_name": "scan.py",
+                    "script_args": [
+                        {
+                            "path": "(^|/)Downloads/?$"
+                        }
+                    ],
+                    "must_run": true
+                }
+            ]
+        },
+        {
+            "id": "structure_desktop",
+            "prompt": "How should I structure my \"~/Schreibtisch\" folder?",
+            "expect_skill": true,
+            "scripts": [
+                {
+                    "script_name": "disk_overview.py",
+                    "script_args": [
+                        {
+                            "path": "(^|/)Schreibtisch/?$"
+                        }
+                    ],
+                    "must_run": false
+                },
+                {
+                    "script_name": "scan.py",
+                    "script_args": [
+                        {
+                            "path": "(^|/)Schreibtisch/?$"
+                        }
+                    ],
+                    "must_run": true
+                }
+            ]
+        },
+        {
+            "id": "skill_miss_easy",
+            "prompt": "Write me a poem",
+            "expect_skill": false,
+            "scripts": []
+        },
+        {
+            "id": "skill_miss_hard",
+            "prompt": "How do I delete a folder in linux?",
+            "expect_skill": false,
+            "scripts": []
+        }
+    ]
+}
