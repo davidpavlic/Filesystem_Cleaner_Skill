@@ -37,7 +37,7 @@ def main():
     pycache_before = (SCRIPTS / "__pycache__").exists()
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        
+
         # Setup folder structure with known sizes and types
         make_fixture(root)
 
