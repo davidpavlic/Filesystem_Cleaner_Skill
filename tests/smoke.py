@@ -48,6 +48,12 @@ def main():
         hidden = run("scan.py", str(root), "--include-hidden")
         assert hidden["total"] == {"files": 4, "size": "4.0 MB"}, hidden["total"]
 
+        # A missing path is reported instead of looking like an empty folder
+        missing = str(root / "missing")
+        skipped = run("scan.py", str(root), missing)
+        assert skipped["skipped_paths"] == [missing], skipped["skipped_paths"]
+        assert skipped["total"] == scan["total"], skipped["total"]
+
         # disk_overview.py always includes hidden folders and also counts the hard link once
         disk = run("disk_overview.py", str(root))
         assert disk["filesystems"], "no filesystem found"

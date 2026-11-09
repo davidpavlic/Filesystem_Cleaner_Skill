@@ -4,8 +4,8 @@
 A structure the user can keep up without effort. Prefer targeted changes over a full rebuild: if the current structure mostly works, only fix the outliers.
 
 ## How to work
-1. Run `scan.py PATH --depth 3` to see where size and file counts are.
-2. Use `top_types` per folder from scan.py, plus file names where needed, to find the folders areas
+1. Run `scan.py PATH --depth 3` to see where size and file counts are. Without a path, scan `~`.
+2. Use `top_types` per folder from scan.py, plus file names where needed, to find which areas the folders belong to.
 3. Propose a target tree, then map the largest current folders onto it.
 4. List only the moves and renames that matter most (max ~20).
 

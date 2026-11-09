@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))  # python3 -I lea
 from common import disk_bytes, disk_bytes_to_count, human
 
 # Extensions we treat as installers: usually deletable once the app is installed.
-INSTALLERS = {".exe", ".msi", ".msix", ".dmg", ".pkg", ".deb", ".rpm", ".run", ".appimage"}
+INSTALLERS = {".exe", ".msi", ".msix", ".dmg", ".pkg", ".deb", ".rpm", ".run"}
 # Archive extensions; flagged only if a same-named folder sits next to them (already unpacked).
 ARCHIVES = (".tar.gz", ".tgz", ".tar", ".zip", ".7z", ".rar")
 
@@ -83,11 +83,13 @@ def main():
     installers, extracted, types = [], [], Counter()
     total_files = total_bytes = 0
     seen = set()  # hard-linked files already counted
+    skipped = []  # paths that are missing or not a folder
 
     for p in a.paths:
         # make relative paths absolute, by replacing envvars and ~, and normalizing separators
         root = os.path.abspath(os.path.expandvars(os.path.expanduser(p)))
         if not os.path.isdir(root):
+            skipped.append(root)  # reported, so a missing path does not look like an empty folder
             continue
         for path, file_stat in files(root, a.include_hidden):
             size = disk_bytes_to_count(file_stat, seen)
@@ -126,6 +128,7 @@ def main():
     # Cap the folder lists at 50 entries so the output stays readable.
     print(json.dumps({
         "total": {"files": total_files, "size": human(total_bytes)},
+        "skipped_paths": skipped,
         "folders": [row(path, folder_stats) for path, folder_stats in rows[:50]],
         "stale_folders": [row(path, folder_stats) for path, folder_stats in rows if folder_stats["newest"] < cutoff][:50],
         "installers": installers,

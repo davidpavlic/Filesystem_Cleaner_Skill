@@ -1,7 +1,7 @@
 {
     "cases": [
         {
-            "id": "storage_full",
+            "id": "disk_overview_storage_full",
             "prompt": "My storage is full",
             "expect_skill": true,
             "scripts": [
@@ -13,42 +13,13 @@
             ]
         },
         {
-            "id": "clear_downloads",
-            "prompt": "Clear up space in the Downloads folder",
+            "id": "disk_overview_downloads",
+            "prompt": "My disk is full, check Downloads",
             "expect_skill": true,
             "scripts": [
                 {
                     "script_name": "disk_overview.py",
-                    "script_args": [
-                        {
-                            "path": "(^|/)Downloads/?$"
-                        }
-                    ],
-                    "must_run": true
-                }
-            ]
-        },
-        {
-            "id": "aufraeumen_downloads",
-            "prompt": "Räum meinen Downloads-Ordner auf",
-            "expect_skill": true,
-            "scripts": [
-                {
-                    "script_name": "disk_overview.py",
-                    "script_args": [
-                        {
-                            "path": "(^|/)Downloads/?$"
-                        }
-                    ],
-                    "must_run": true
-                },
-                {
-                    "script_name": "scan.py",
-                    "script_args": [
-                        {
-                            "path": "(^|/)Downloads/?$"
-                        }
-                    ],
+                    "script_args": [{"path": "(^|/)Downloads/?$"}],
                     "must_run": true
                 }
             ]
@@ -59,22 +30,67 @@
             "expect_skill": true,
             "scripts": [
                 {
+                    "script_name": "scan.py",
+                    "script_args": [{"path": "(^|/)Schreibtisch/?$"}],
+                    "must_run": true
+                }
+            ]
+        },
+        {
+            "id": "user_bloat_downloads",
+            "prompt": "I lost track of my Downloads folder. What is all this and what can I safely delete?",
+            "expect_skill": true,
+            "scripts": [
+                {
+                    "script_name": "scan.py",
+                    "script_args": [{"path": "(^|/)Downloads/?$"}, {"--files": true}],
+                    "must_run": true
+                }
+            ]
+        },
+        {
+            "id": "user_bloat_downloads_german",
+            "prompt": "Räum meinen Downloads-Ordner auf",
+            "expect_skill": true,
+            "scripts": [
+                {
+                    "script_name": "scan.py",
+                    "script_args": [{"path": "(^|/)Downloads/?$"}, {"--files": true}],
+                    "must_run": true
+                }
+            ]
+        },
+        {
+            "id": "disk_overview_user_bloat_downloads",
+            "prompt": "My disk is full. What in my Downloads can I safely delete?",
+            "expect_skill": true,
+            "scripts": [
+                {
                     "script_name": "disk_overview.py",
-                    "script_args": [
-                        {
-                            "path": "(^|/)Schreibtisch/?$"
-                        }
-                    ],
-                    "must_run": false
+                    "script_args": [{"path": "(^|/)Downloads/?$"}],
+                    "must_run": true
                 },
                 {
                     "script_name": "scan.py",
-                    "script_args": [
-                        {
-                            "path": "(^|/)Schreibtisch/?$"
-                        }
-                    ],
+                    "script_args": [{"path": "(^|/)Downloads/?$"}, {"--files": true}],
+                    "must_run": false
+                }
+            ]
+        },
+        {
+            "id": "disk_overview_user_bloat_no_path",
+            "prompt": "My disk is full, I want to delete my own files where possible",
+            "expect_skill": true,
+            "scripts": [
+                {
+                    "script_name": "disk_overview.py",
+                    "script_args": [{"path": null}],
                     "must_run": true
+                },
+                {
+                    "script_name": "scan.py",
+                    "script_args": [{"path": "^(~|\\$HOME|/home/[^/]+)/[^.]"}, {"--files": true}],
+                    "must_run": false
                 }
             ]
         },

@@ -1,8 +1,8 @@
 ---
 type: cleaner-report
 date: {{YYYY-MM-DD}}
-scope: {{scanned path, or "default paths"}}
-functions: [{{disk-overview, structure}}]
+scope: {{scanned path}}
+functions: [{{disk-overview, structure, user-bloat}}]
 ---
 
 <!--
