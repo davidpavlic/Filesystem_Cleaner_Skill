@@ -48,10 +48,10 @@ Instructions for filling this template (remove all comments in the final report)
 
 {{2–3 sentences: which areas you found and why the tree fits them}}
 
-## Dead Folders & Installers
-| Path | Size | Last modified | Reason |
-|---|---|---|---|
-| {{path}} | {{size}} | {{date}} | {{e.g. installer of installed app, untouched for 2 years}} |
+## Folder Overview
+| Path | What it is | Verdict | Size | Modified |
+|---|---|---|---|---|
+| {{path}} | {{e.g. installer of an installed app}} | {{keep / can go / ask}} | {{size}} | {{date}} |
 
 ## Duplicates
 | Keep | Duplicates | Size each |

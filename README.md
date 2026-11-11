@@ -21,7 +21,7 @@ The functions follow one idea: organize your folders, see where the space went, 
 - `scripts/scan.py` collects the facts as JSON: folder sizes, file types and last changes.
 Claude turns them into recommendations, following the rules in `references/structure.md`.
 - `scripts/disk_overview.py` measures how full each partition is and which folders fill it. Claude follows `references/disk-overview.md`.
-- For a folder you lost track of, `scripts/scan.py` also lists installers, archives that were already extracted and folders nothing changed in for a year. Claude explains what they are and which can go, following `references/user-bloat.md`.
+- For a folder you lost track of, `scripts/scan.py` also lists installers, archives that were already extracted and folders nothing changed in for a year, and with `--files` the biggest files. Claude explains what they are and which can go, following `references/user-bloat.md`.
 
 ## Design decisions
 
@@ -64,7 +64,7 @@ The scripts are deterministic, Claude is not. `evals/run.py` runs Claude Code he
 python3 evals/run.py
 ```
 
-**Last run:** 6/6 passed on 2026-11-03 with Claude Code 2.1.300 and Opus 5.5, $0.88 in total.
+**Last run:** 9/9 passed on 2026-11-11 with Claude Code 2.1.300 and Opus 5.5, $1.71 in total.
 
 ## How it was built
 

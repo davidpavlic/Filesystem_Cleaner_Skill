@@ -54,6 +54,13 @@ def main():
         assert skipped["skipped_paths"] == [missing], skipped["skipped_paths"]
         assert skipped["total"] == scan["total"], skipped["total"]
 
+        # --files lists the files with their size, only when asked
+        listed = run("scan.py", str(root), "--files")
+        sizes = {Path(f["path"]).name: f["size"] for f in listed["files"]}
+        assert sizes.get("setup.exe") == "1.0 MB", sizes
+        assert listed["files_not_listed"] == 0, listed["files_not_listed"]
+        assert "files" not in scan, "files listed without --files"
+
         # disk_overview.py always includes hidden folders and also counts the hard link once
         disk = run("disk_overview.py", str(root))
         assert disk["filesystems"], "no filesystem found"

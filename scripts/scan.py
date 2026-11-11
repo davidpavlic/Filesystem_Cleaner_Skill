@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Read-only inventory: folder sizes and types, stale folders, installers,
-archives that were already extracted.
+archives that were already extracted and, with --files, the biggest files.
 
-Usage: scan.py PATH [PATH ...] [--depth 3] [--stale-days 365] [--include-hidden]
+Usage: scan.py PATH [PATH ...] [--depth 3] [--stale-days 365] [--include-hidden] [--files]
 Prints JSON. Never writes, moves or deletes anything.
 """
 import argparse
@@ -22,6 +22,8 @@ from common import disk_bytes, disk_bytes_to_count, human
 INSTALLERS = {".exe", ".msi", ".msix", ".dmg", ".pkg", ".deb", ".rpm", ".run"}
 # Archive extensions; flagged only if a same-named folder sits next to them (already unpacked).
 ARCHIVES = (".tar.gz", ".tgz", ".tar", ".zip", ".7z", ".rar")
+# --files lists at most this many files, biggest first; the rest is only counted.
+MAX_FILES = 200
 
 
 def day(ts):
@@ -73,6 +75,7 @@ def main():
     ap.add_argument("--depth", type=int, default=3)          # how finely to group folders
     ap.add_argument("--stale-days", type=int, default=365)   # "stale" files threshold
     ap.add_argument("--include-hidden", action="store_true")
+    ap.add_argument("--files", action="store_true")          # also list the biggest files
     a = ap.parse_args()
 
     # Var & Data Initialization
@@ -81,6 +84,7 @@ def main():
     folders = defaultdict(lambda: {"files": 0, "bytes": 0, "newest": 0, "types": Counter()})
     # extracted: list of archives that have a same-named folder next to them
     installers, extracted, types = [], [], Counter()
+    all_files = []  # only with --files: (size, path, mtime, type) of every file
     total_files = total_bytes = 0
     seen = set()  # hard-linked files already counted
     skipped = []  # paths that are missing or not a folder
@@ -117,6 +121,10 @@ def main():
                 extracted.append({"path": path, "size": human(disk_bytes(file_stat)),
                                   "extracted_to": folder})
 
+            # Remember every file for the --files list
+            if a.files:
+                all_files.append((disk_bytes(file_stat), path, file_stat.st_mtime, ext))
+
     # Biggest folders first by bytes (B, KB, GB is not in the attribute, only in extracted & installers)
     rows = sorted(folders.items(), key=lambda kv: kv[1]["bytes"], reverse=True)
 
@@ -126,7 +134,7 @@ def main():
                 "top_types": dict(folder_stats["types"].most_common(3))} # most common 3 file types
 
     # Cap the folder lists at 50 entries so the output stays readable.
-    print(json.dumps({
+    out = {
         "total": {"files": total_files, "size": human(total_bytes)},
         "skipped_paths": skipped,
         "folders": [row(path, folder_stats) for path, folder_stats in rows[:50]],
@@ -134,7 +142,14 @@ def main():
         "installers": installers,
         "extracted_archives": extracted,
         "types": dict(types.most_common(15)),
-    }, indent=2, ensure_ascii=False))
+    }
+    # --files: the biggest files first, capped at MAX_FILES
+    if a.files:
+        biggest = sorted(all_files, reverse=True)[:MAX_FILES]
+        out["files"] = [{"path": path, "size": human(size), "modified": day(mtime), "type": ext}
+                        for size, path, mtime, ext in biggest]
+        out["files_not_listed"] = len(all_files) - len(biggest)
+    print(json.dumps(out, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":
