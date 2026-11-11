@@ -179,6 +179,8 @@ def evaluate(case, events):
 
 
 def main():
+    sys.stdout.reconfigure(line_buffering=True)  # show each case when it is done, also when the output goes to a file
+
     # Parse Command Line Arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("ids", nargs="*", help="case ids to run (default: all)")

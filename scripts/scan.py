@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Read-only inventory: folder sizes and types, stale folders, installers,
-archives that were already extracted and, with --files, the biggest files.
+archives that were already extracted and, with --files, the biggest files and
+files with the same content.
 
 Usage: scan.py PATH [PATH ...] [--depth 3] [--stale-days 365] [--include-hidden] [--files]
 Prints JSON. Never writes, moves or deletes anything.
 """
 import argparse
+import hashlib
 import json
 import os
 import stat
@@ -23,7 +25,7 @@ INSTALLERS = {".exe", ".msi", ".msix", ".dmg", ".pkg", ".deb", ".rpm", ".run"}
 # Archive extensions; flagged only if a same-named folder sits next to them (already unpacked).
 ARCHIVES = (".tar.gz", ".tgz", ".tar", ".zip", ".7z", ".rar")
 # --files lists at most this many files, biggest first; the rest is only counted.
-MAX_FILES = 200
+MAX_FILES = 100
 
 
 def day(ts):
@@ -68,6 +70,31 @@ def extracted_folder(path):
     return None
 
 
+def file_hash(path):
+    # SHA-256 of the content, read in 1 MB chunks so big files do not fill the memory
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def duplicates(by_size):
+    # Groups of files with the same content; only files of the same size are hashed
+    groups = []
+    for size, by_inode in by_size.items():
+        if len(by_inode) < 2:
+            continue
+        by_hash = defaultdict(list)
+        for path in by_inode.values():
+            try:
+                by_hash[file_hash(path)].append(path)
+            except OSError:  # because of permissions or deletions
+                continue
+        groups += [(size, sorted(paths)) for paths in by_hash.values() if len(paths) > 1]
+    return sorted(groups, reverse=True)  # biggest first
+
+
 def main():
     # Parse command-line arguments.
     ap = argparse.ArgumentParser()
@@ -85,6 +112,7 @@ def main():
     # extracted: list of archives that have a same-named folder next to them
     installers, extracted, types = [], [], Counter()
     all_files = []  # only with --files: (size, path, mtime, type) of every file
+    by_size = defaultdict(dict)  # only with --files: exact size -> {inode: path}, for the duplicate check
     total_files = total_bytes = 0
     seen = set()  # hard-linked files already counted
     skipped = []  # paths that are missing or not a folder
@@ -121,9 +149,12 @@ def main():
                 extracted.append({"path": path, "size": human(disk_bytes(file_stat)),
                                   "extracted_to": folder})
 
-            # Remember every file for the --files list
+            # Remember every file for the --files list and the duplicate check
             if a.files:
                 all_files.append((disk_bytes(file_stat), path, file_stat.st_mtime, ext))
+                if file_stat.st_size:  # empty files are all equal, not worth listing
+                    # keyed by inode, so the hard links of one file are no duplicates
+                    by_size[file_stat.st_size][(file_stat.st_dev, file_stat.st_ino)] = path
 
     # Biggest folders first by bytes (B, KB, GB is not in the attribute, only in extracted & installers)
     rows = sorted(folders.items(), key=lambda kv: kv[1]["bytes"], reverse=True)
@@ -149,7 +180,10 @@ def main():
         out["files"] = [{"path": path, "size": human(size), "modified": day(mtime), "type": ext}
                         for size, path, mtime, ext in biggest]
         out["files_not_listed"] = len(all_files) - len(biggest)
-    print(json.dumps(out, indent=2, ensure_ascii=False))
+        out["duplicates"] = [{"size": human(size), "paths": paths}
+                             for size, paths in duplicates(by_size)[:50]]
+    # Compact, without indentation: Claude Code moves long outputs to a file, which costs extra steps
+    print(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
 
 
 if __name__ == "__main__":

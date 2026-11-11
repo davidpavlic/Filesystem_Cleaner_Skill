@@ -69,6 +69,11 @@ def main():
         names = {Path(r["path"]).name for r in disk["largest"]}
         assert {"docs", ".cache"} <= names, names
 
+        # A copy with the same content is a duplicate, the hard link in docs is none
+        (root / "docs" / "setup (1).exe").write_bytes((root / "setup.exe").read_bytes())
+        dupes = run("scan.py", str(root), "--files")["duplicates"]
+        assert [sorted(Path(p).name for p in d["paths"]) for d in dupes] == [["setup (1).exe", "setup.exe"]], dupes
+
     # Read-only promise: running the scripts must not leave bytecode next to them
     assert (SCRIPTS / "__pycache__").exists() == pycache_before, "scripts wrote __pycache__"
     print("smoke test passed")
